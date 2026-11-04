@@ -1,0 +1,18 @@
+@import 'tailwindcss';
+
+@font-face {
+  font-family: 'Anton';
+  src: url('./assets/fonts/Anton-Regular.woff2') format('woff2');
+  font-display: swap;
+}
+
+@theme {
+  --color-blue-custom: #007db5;
+  --color-yellow-custom: #d05b00;
+  --font-anton: 'Anton', sans-serif;
+}
+
+html {
+  background: black;
+  color-scheme: dark;
+}
