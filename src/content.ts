@@ -1,26 +1,33 @@
-import theCracks from './assets/covers/thecracks.jpg'
-import idols from './assets/covers/idols.jpg'
-import medusa from './assets/covers/medusa.jpg'
-import godspeed from './assets/covers/godspeed.jpg'
-import goldAndDiamonds from './assets/covers/goldanddiamonds.jpg'
+import biographyText from '../content/biography.txt?raw'
+import playlist from '../content/playlist.json'
 
 export type Track = {
   title: string
-  /** Path to an mp3 inside `public/audio/`. */
   src: string
   cover: string
 }
 
 const base = import.meta.env.BASE_URL
 
+const covers = import.meta.glob<string>('../content/covers/*', {
+  eager: true,
+  import: 'default',
+  query: '?url',
+})
+
+const coverUrl = (file: string) => {
+  const url = covers[`../content/covers/${file}`]
+  if (!url) throw new Error(`playlist.json: cover "${file}" not found in content/covers/`)
+  return url
+}
+
 export const band = {
   name: 'Union Jack',
   tagline: 'Punk rock & bad ska · Paris, France',
-  biography: [
-    'Angry, raw and percussive, Union Jack have been spreading their rock & roll, punk and ska influences since 1997. This singular combination, refined along the years, results in the trio’s unique and original sound, made of catchy melodies and musical dissonances.',
-    'The trio has performed in France, Europe and Canada, sharing the stage with The Damned, DOA, UK Subs, Leftöver Crack, Swingin Utters, Subhumans, The Aggrolites, The Movement, Inner Terrestrials…',
-    'Their latest record, “Acid Serenades”, is out on Beer Records.',
-  ],
+  biography: biographyText
+    .split(/\n\s*\n/)
+    .map((paragraph) => paragraph.trim())
+    .filter(Boolean),
   email: 'unionjackpunx@gmail.com',
   links: [
     { label: 'Bandcamp', icon: 'bandcamp', url: 'https://unionjack.bandcamp.com' },
@@ -46,10 +53,8 @@ export const backgroundVideo = {
   poster: `${base}media/poster.jpg`,
 }
 
-export const tracks: Track[] = [
-  { title: 'The Cracks', src: `${base}audio/the-cracks.mp3`, cover: theCracks },
-  { title: 'Idols', src: `${base}audio/idols.mp3`, cover: idols },
-  { title: 'Medusa', src: `${base}audio/medusa.mp3`, cover: medusa },
-  { title: 'Godspeed', src: `${base}audio/godspeed.mp3`, cover: godspeed },
-  { title: 'Gold and Diamonds', src: `${base}audio/gold-and-diamonds.mp3`, cover: goldAndDiamonds },
-]
+export const tracks: Track[] = playlist.map(({ title, audio, cover }) => ({
+  title,
+  src: `${base}audio/${audio}`,
+  cover: coverUrl(cover),
+}))
